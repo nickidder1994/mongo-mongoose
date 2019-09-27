@@ -1,10 +1,11 @@
 var express = require("express");
+var bodyParser = require("body-parser")
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var axios = require("axios");
 var cheerio = require("cheerio");
 
-var db = require("./models");
+// var db = require("./models");
 
 var PORT = 3000;
 
@@ -12,40 +13,45 @@ var app = express();
 
 app.use(logger("dev"));
 app.use(express.urlencoded({
-    extended: true
+    extended: false
 }));
 app.use(express.json());
 
-app.use(express.static("public"));
+app.use(express.static("/public"));
 
-mongoose.connect("mongodb://localhost/unit18Populater", {
-    useNewUrlParser: true
-});
+mongoose.connect("mongodb://localhost/articledb", {useNewUrlParser: true });
+    // useNewUrlParser: true
+  var db = require("./models")
+
 
 app.get("/scrape", function (req, res) {
-
-    axios.get("https://www.nytimes.com//").then(function (response) {
+    axios.get("https://www.ocregister.com/").then(function (response) {
         var $ = cheerio.load(response.data);
-        $("article h2").each(function (i, element) {
+        
+        $(".entry-title").each(function (i, element) {
             var result = {};
+
             result.title = $(this)
                 .children("a")
-                .text();
+                .text()
             result.link = $(this)
                 .children("a")
                 .attr("href");
+                
             db.Article.create(result)
                 .then(function (dbArticle) {
+                   // res.send(dbArticle)
                     console.log(dbArticle);
                 })
                 .catch(function (err) {
                     console.log(err);
                 });
         });
-        res.send("Scrape Complete");
+       
+       res.send("Scrape Complete");
     });
 });
-app.get("/articles", function (req, res) {
+app.get("/article", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             res.json(dbArticle);
@@ -55,8 +61,8 @@ app.get("/articles", function (req, res) {
         });
 });
 
-app.post("/articles/:id", function (req, res) {
-    db.Note.create(req.body)
+app.post("/article/:id", function (req, res) {
+    db.comment.create(req.body)
         .then(function (dbNote) {
             return db.Article.findOneAndUpdate({
                 _id: req.params.id
