@@ -6,16 +6,14 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 var exphbs = require("express-handlebars");
 
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
-
-
-
-// var db = require("./models");
-
 var PORT = 3000;
 
 var app = express();
+
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
+// var db = require("./models");
 
 app.use(logger("dev"));
 app.use(express.urlencoded({
@@ -60,7 +58,8 @@ app.get("/scrape", function (req, res) {
 app.get("/article", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
-            res.json(dbArticle);
+            // res.json(dbArticle);
+            res.render("index")
         })
         .catch(function (err) {
             res.json(err);
