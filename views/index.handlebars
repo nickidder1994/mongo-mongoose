@@ -1,6 +1,13 @@
 <h1>Articles</h1>
+
 {{dbArticle.length}}
-{{#each articles}}
-   <p>{{title}}</p> 
-    <a href= "{{link}}">{{link}}</a> 
-{{/each}}
+<div class="container">
+    <div class="row">
+        <div class="col-md6">
+            {{#each articles}}
+            <p>{{title}}</p>
+            <a href="{{link}}">{{link}}</a>
+            {{/each}}
+        </div>
+    </div>
+</div>
