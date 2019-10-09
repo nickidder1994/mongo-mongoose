@@ -13,15 +13,13 @@ var app = express();
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-// var db = require("./models");
+var db = require("./models");
 
 app.use(logger("dev"));
-app.use(express.urlencoded({
-    extended: false
-}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(express.static("/public"));
+app.use(express.static("public"));
 
 mongoose.connect("mongodb://localhost/articledb", {useNewUrlParser: true });
     // useNewUrlParser: true
@@ -44,8 +42,8 @@ app.get("/scrape", function (req, res) {
                 
             db.Article.create(result)
                 .then(function (dbArticle) {
-                   // res.send(dbArticle)
-                    console.log(dbArticle);
+                   res.send(dbArticle)
+                    // console.log(dbArticle);
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -55,18 +53,33 @@ app.get("/scrape", function (req, res) {
        res.send("Scrape Complete");
     });
 });
-app.get("/article", function (req, res) {
+app.get("/articles", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
+            res.json(dbArticle);
+            // res.render("/articles", dbArticle)
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
+app.get("/", function (req, res) {
+    db.Article.find({})
+        .then(function (dbArticle) {
+            var articles = {
+                articles: dbArticle
+            }
             // res.json(dbArticle);
-            res.render("index")
+            
+           // console.log(dbArticle)
+            res.render("index", articles)
         })
         .catch(function (err) {
             res.json(err);
         });
 });
 
-app.post("/article/:id", function (req, res) {
+app.post("/articles/:id", function (req, res) {
     db.comment.create(req.body)
         .then(function (dbNote) {
             return db.Article.findOneAndUpdate({
