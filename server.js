@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/articledb", {useNewUrlParser: true });
+mongoose.connect (process.env.MONGODB_URI || "mongodb://localhost/articledb", {useNewUrlParser: true });
     // useNewUrlParser: true
   var db = require("./models")
 
